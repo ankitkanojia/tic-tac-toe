@@ -1,26 +1,43 @@
 import React from 'react';
-import logo from './logo.svg';
+import puzzle from "./logo.svg";
 import './App.css';
+import * as ReactDOM from 'react-dom';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+
+    };
+  }
+
+  componentDidMount() {
+
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <div class="container">
+          <div class="row">
+            <div className="col-md-12 d-flex  justify-content-center align-items-center">
+              <table>
+                <tbody>
+                  {[...Array(5)].map((data, index) => {
+                    return <tr>
+                      {[...Array(8)].map((sdata, sindex) => {
+                        return <td>&nbsp;</td>
+                      })}
+                    </tr>
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
 
 export default App;
