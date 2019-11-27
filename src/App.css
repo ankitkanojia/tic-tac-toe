@@ -1,7 +1,58 @@
+
+html,body{
+  height:100%;
+}
+  
+.App{
+  height:100vh;
+}
+
 body {
   background: url("bgimage.png");
 }
 
-.app{
-  min-height: 100vh;
+
+td.playe_a
+{
+  background-color: lightblue;
+  border-radius: 40px;
+  width: 50px;
+}
+
+td.playe_b
+{
+  background-color: lightsalmon;
+  border-radius: 40px;
+  width: 50px;
+}
+
+/* .playe_a img , .playe_b img{
+  display: none;
+} */
+
+td.scoreboard{
+  background-color: black;
+  color: white;
+  font-size: 20px;
+}
+
+td.scoreboard{
+  background-color: black;
+}
+
+td.white{
+  background-color: white;
+  border: 1px solid black;
+}
+
+.playe_b img.active{
+  display: block;
+}
+
+.playe_a img.active{
+  display: block;
+}
+
+.scoreboard:hover{
+  cursor:  pointer;
 }
