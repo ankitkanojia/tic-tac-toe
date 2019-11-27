@@ -11,7 +11,6 @@ body {
   background: url("bgimage.png");
 }
 
-
 td.playe_a
 {
   background-color: lightblue;
@@ -26,9 +25,9 @@ td.playe_b
   width: 50px;
 }
 
-/* .playe_a img , .playe_b img{
+.playe_a img , .playe_b img{
   display: none;
-} */
+}
 
 td.scoreboard{
   background-color: black;

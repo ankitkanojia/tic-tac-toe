@@ -1,18 +1,25 @@
 import React from 'react';
 import './App.css';
 import * as ReactDOM from 'react-dom';
-import smily from  "./smily.png";
+import playerA from  "./A.png";
+import playerB from  "./B.png";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      boardTitle : "CLICK START GAME"
+      boardTitle : "CLICK START GAME",
+      isGameStart : false,
+      currentPlayer : ""
     };
   }
 
-  componentDidMount() {
-
+  onBoardClick = () => {
+    this.setState({
+      isGameStart : true,
+      boardTitle : "Player A turn!",
+      currentPlayer : "A"
+    });
   }
 
   render() {
@@ -26,7 +33,7 @@ class App extends React.Component {
                   <tr height="60px">
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
-                    <td colspan="3" className="scoreboard text-center">{this.state.boardTitle}</td>
+                    <td colspan="3" className="scoreboard text-center" onClick={(!this.state.isGameStart && this.onBoardClick)}>{this.state.boardTitle}</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                   </tr>
@@ -34,13 +41,13 @@ class App extends React.Component {
                     <td colspan="7">&nbsp;</td>
                   </tr>
                   <tr className="white">
-                    <td rowspan="4" className="playe_a"><img width="100%" src={smily} alt="Player A" /></td>
+                    <td rowspan="4" className={"playe_a"}><img className={this.state.currentPlayer === "A" && "active"} width="100%" src={playerA} alt="Player A" /></td>
                     <td rowspan="4">&nbsp;</td>
                     <td className="white">&nbsp;</td>
                     <td className="white">&nbsp;</td>
                     <td className="white">&nbsp;</td>
                     <td rowspan="4">&nbsp;</td>
-                    <td rowspan="4" className="playe_b"><img width="100%" src={smily} alt="Player B" /></td>
+                    <td rowspan="4" className={"playe_b"}><img className={this.state.currentPlayer === "B" && "active"} width="100%" src={playerB} alt="Player B" /></td>
                   </tr>
                   <tr>
                     <td className="white">&nbsp;</td>
