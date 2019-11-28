@@ -27,11 +27,13 @@ class App extends React.Component {
   }
 
   logicVerification = async () => {
+    let correct = false;
     const combinationCollection = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]];
     combinationCollection.map((data) => {
       if(this.refs["block" + data[0]].textContent && this.refs["block" + data[1]].textContent && this.refs["block" + data[2]].textContent)
       {
         if (this.refs["block" + data[0]].textContent.toLowerCase() === this.refs["block" + data[1]].textContent.toLowerCase() && this.refs["block" + data[1]].textContent.toLowerCase() === this.refs["block" + data[2]].textContent.toLowerCase() && this.refs["block" + data[2]].textContent.toLowerCase() === this.refs["block" + data[0]].textContent.toLowerCase()) {
+          correct = true;
           this.refs["block" + data[0]].className = this.refs["block" + data[0]].className  + " correct";
           this.refs["block" + data[1]].className = this.refs["block" + data[1]].className  + " correct";
           this.refs["block" + data[2]].className = this.refs["block" + data[2]].className  + " correct";
@@ -62,6 +64,28 @@ class App extends React.Component {
         }
       }
     });
+    
+    if(this.state.totalBlock === 9 && !correct)
+    {
+        this.setState({
+        boardTitle: "NO WINNER",
+        currentPlayer: "",
+        totalBlock : 0,
+        isWinner : false,
+        isFinish : true
+      },() => {
+        setTimeout(() => {
+          [...Array(9)].map((data,sindex) => {
+            this.refs["block" + (sindex + 1)].textContent = "";
+          });
+          this.setState({
+            boardTitle: "RESTART GAME",
+            isGameStart : false,
+            isFinish : false
+          });
+        }, 5000);  
+      });
+    }
   }
 
   handleClick = async (index) => {
@@ -77,10 +101,10 @@ class App extends React.Component {
     let TotalBlock = this.state.totalBlock;
     if(TotalBlock === 8)
     {
-      this.refs["block" + index].textContent = "O";
+      this.refs["block" + index].textContent = "X";
       this.setState({
         currentPlayer: "",
-        totalBlock: TotalBlock
+        totalBlock:  TotalBlock = TotalBlock + 1
       }, async () => {
         await this.logicVerification();
       });
