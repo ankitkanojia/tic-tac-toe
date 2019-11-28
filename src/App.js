@@ -19,6 +19,11 @@ class App extends React.Component {
   }
 
   onBoardClick = () => {
+    if(this.state.isFinish || this.state.isWinner)
+    {
+      return;
+    }
+
     this.setState({
       isGameStart : true,
       boardTitle : "Player A turn!",
@@ -47,6 +52,7 @@ class App extends React.Component {
             currentPlayer: "",
             isWinner: true,
             isFinish: true,
+            totalBlock : 0,
             isGameStart : false
           },() => {
             setTimeout(() => {
@@ -57,14 +63,15 @@ class App extends React.Component {
               this.setState({
                 boardTitle: "RESTART GAME",
                 isGameStart : false,
-                isFinish : false
+                isFinish : false,
+                isWinner: false
               });
             }, 5000);  
           });
         }
       }
     });
-    
+
     if(this.state.totalBlock === 9 && !correct)
     {
         this.setState({
@@ -81,7 +88,8 @@ class App extends React.Component {
           this.setState({
             boardTitle: "RESTART GAME",
             isGameStart : false,
-            isFinish : false
+            isFinish : false,
+            isWinner: false
           });
         }, 5000);  
       });
@@ -108,24 +116,6 @@ class App extends React.Component {
       }, async () => {
         await this.logicVerification();
       });
-      // this.setState({
-      //   boardTitle: "NO WINNER",
-      //   currentPlayer: "",
-      //   totalBlock : 0,
-      //   isWinner : false,
-      //   isFinish : true
-      // },() => {
-      //   setTimeout(() => {
-      //     [...Array(9)].map((data,sindex) => {
-      //       this.refs["block" + (sindex + 1)].textContent = "";
-      //     });
-      //     this.setState({
-      //       boardTitle: "RESTART GAME",
-      //       isGameStart : false,
-      //       isFinish : false
-      //     });
-      //   }, 5000);  
-      // });
     }else{
       TotalBlock = TotalBlock + 1;
       
