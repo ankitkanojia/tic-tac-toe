@@ -26,53 +26,102 @@ class App extends React.Component {
     });
   }
 
-  logicVerification = () => {
+  logicVerification = async () => {
+    const combinationCollection = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]];
+    combinationCollection.map((data) => {
+      if(this.refs["block" + data[0]].textContent && this.refs["block" + data[1]].textContent && this.refs["block" + data[2]].textContent)
+      {
+        if (this.refs["block" + data[0]].textContent.toLowerCase() === this.refs["block" + data[1]].textContent.toLowerCase() && this.refs["block" + data[1]].textContent.toLowerCase() === this.refs["block" + data[2]].textContent.toLowerCase() && this.refs["block" + data[2]].textContent.toLowerCase() === this.refs["block" + data[0]].textContent.toLowerCase()) {
+          this.refs["block" + data[0]].className = this.refs["block" + data[0]].className  + " correct";
+          this.refs["block" + data[1]].className = this.refs["block" + data[1]].className  + " correct";
+          this.refs["block" + data[2]].className = this.refs["block" + data[2]].className  + " correct";
+          let BoardTitle = "Player B Winner!";
+          if (this.refs["block" + data[0]].textContent.toLowerCase() === "x") {
+              BoardTitle  = "Player A Winner!";
+          }
 
+          this.setState({
+            boardTitle: BoardTitle,
+            currentPlayer: "",
+            isWinner: true,
+            isFinish: true,
+            isGameStart : false
+          },() => {
+            setTimeout(() => {
+              [...Array(9)].map((data,sindex) => {
+                this.refs["block" + (sindex + 1)].textContent = "";
+                this.refs["block" + (sindex + 1)].className = "white";
+              });
+              this.setState({
+                boardTitle: "RESTART GAME",
+                isGameStart : false,
+                isFinish : false
+              });
+            }, 5000);  
+          });
+        }
+      }
+    });
   }
 
-  handleClick = (index) => {
-    let TotalBlock = this.state.totalBlock;
-
-    if(TotalBlock > 5){
-      this.logicVerification();      
+  handleClick = async (index) => {
+    if(!this.state.isGameStart || this.state.isFinish)
+    {
+      return;
     }
 
+    if(this.refs["block" + index].textContent.length > 0){
+      return;
+    }
+
+    let TotalBlock = this.state.totalBlock;
     if(TotalBlock === 8)
     {
       this.refs["block" + index].textContent = "O";
       this.setState({
-        boardTitle: "NO WINNER",
         currentPlayer: "",
-        totalBlock : 0,
-        isWinner : false,
-        isFinish : true
-      },() => {
-        setTimeout(() => {
-          [...Array(9)].map((data,sindex) => {
-            this.refs["block" + (sindex + 1)].textContent = "";
-          });
-          this.setState({
-            boardTitle: "RESTART GAME",
-            isGameStart : false,
-            isFinish : false
-          });
-        }, 5000);  
+        totalBlock: TotalBlock
+      }, async () => {
+        await this.logicVerification();
       });
+      // this.setState({
+      //   boardTitle: "NO WINNER",
+      //   currentPlayer: "",
+      //   totalBlock : 0,
+      //   isWinner : false,
+      //   isFinish : true
+      // },() => {
+      //   setTimeout(() => {
+      //     [...Array(9)].map((data,sindex) => {
+      //       this.refs["block" + (sindex + 1)].textContent = "";
+      //     });
+      //     this.setState({
+      //       boardTitle: "RESTART GAME",
+      //       isGameStart : false,
+      //       isFinish : false
+      //     });
+      //   }, 5000);  
+      // });
     }else{
       TotalBlock = TotalBlock + 1;
+      
       if (this.state.currentPlayer === "A") {
         this.refs["block" + index].textContent = "X";
         this.setState({
           boardTitle: "Player B turn!",
           currentPlayer: "B",
-          totalBlock : TotalBlock
+          totalBlock: TotalBlock
+        }, async () => {
+          await this.logicVerification();
         });
       } else {
         this.refs["block" + index].textContent = "O";
         this.setState({
           boardTitle: "Player A turn!",
           currentPlayer: "A",
-          totalBlock : TotalBlock
+          totalBlock: TotalBlock
+        }, async () => {
+          await this.logicVerification();
         });
       }
     }

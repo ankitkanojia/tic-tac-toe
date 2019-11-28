@@ -52,6 +52,10 @@ td.allwrong{
   background-color: lightpink;
 }
 
+td.correct{
+  background-color: yellow;
+}
+
 td.white:hover{
   cursor: pointer;
 }
