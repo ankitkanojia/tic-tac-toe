@@ -42,6 +42,14 @@ td.scoreboard{
 td.white{
   background-color: white;
   border: 1px solid black;
+  height: 80px;
+  width: 80px;
+  text-align: center;
+  font-size: xxx-large;
+}
+
+td.white:hover{
+  cursor: pointer;
 }
 
 .playe_b img.active{
