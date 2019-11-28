@@ -48,6 +48,10 @@ td.white{
   font-size: xxx-large;
 }
 
+td.allwrong{
+  background-color: lightpink;
+}
+
 td.white:hover{
   cursor: pointer;
 }

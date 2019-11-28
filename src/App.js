@@ -3,6 +3,7 @@ import './App.css';
 import * as ReactDOM from 'react-dom';
 import playerA from  "./A.png";
 import playerB from  "./B.png";
+import { setTimeout } from 'timers';
 
 class App extends React.Component {
   constructor(props) {
@@ -11,7 +12,9 @@ class App extends React.Component {
       boardTitle : "CLICK START GAME",
       isGameStart : false,
       currentPlayer : "",
-      totalBlock : 0
+      totalBlock : 0,
+      isWinner : false,
+      isFinish : false
     };
   }
 
@@ -23,17 +26,37 @@ class App extends React.Component {
     });
   }
 
+  logicVerification = () => {
+
+  }
+
   handleClick = (index) => {
     let TotalBlock = this.state.totalBlock;
+
+    if(TotalBlock > 5){
+      this.logicVerification();      
+    }
+
     if(TotalBlock === 8)
     {
-      [...Array(9)].map((data,sindex) => {
-        this.refs["block" + (sindex + 1)].textContent = "";
-      });
+      this.refs["block" + index].textContent = "O";
       this.setState({
-        boardTitle: "CLICK START GAME",
+        boardTitle: "NO WINNER",
         currentPlayer: "",
-        totalBlock : 0
+        totalBlock : 0,
+        isWinner : false,
+        isFinish : true
+      },() => {
+        setTimeout(() => {
+          [...Array(9)].map((data,sindex) => {
+            this.refs["block" + (sindex + 1)].textContent = "";
+          });
+          this.setState({
+            boardTitle: "RESTART GAME",
+            isGameStart : false,
+            isFinish : false
+          });
+        }, 5000);  
       });
     }else{
       TotalBlock = TotalBlock + 1;
@@ -76,21 +99,21 @@ class App extends React.Component {
                   <tr className="white">
                     <td rowspan="4" className={"playe_a"}><img className={this.state.currentPlayer === "A" && "active"} width="100%" src={playerA} alt="Player A" /></td>
                     <td rowspan="4">&nbsp;</td>
-                    <td className="white" onClick={() => this.handleClick(1)} ref="block1"></td>
-                    <td className="white" onClick={() => this.handleClick(2)} ref="block2"></td>
-                    <td className="white" onClick={() => this.handleClick(3)} ref="block3"></td>
+                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(1)} ref="block1"></td>
+                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(2)} ref="block2"></td>
+                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(3)} ref="block3"></td>
                     <td rowspan="4">&nbsp;</td>
                     <td rowspan="4" className={"playe_b"}><img className={this.state.currentPlayer === "B" && "active"} width="100%" src={playerB} alt="Player B" /></td>
                   </tr>
                   <tr>
-                    <td className="white" onClick={() => this.handleClick(4)} ref="block4"></td>
-                    <td className="white" onClick={() => this.handleClick(5)} ref="block5"></td>
-                    <td className="white" onClick={() => this.handleClick(6)} ref="block6"></td>
+                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(4)} ref="block4"></td>
+                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(5)} ref="block5"></td>
+                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(6)} ref="block6"></td>
                   </tr>
                   <tr className="white">
-                    <td className="white" onClick={() => this.handleClick(7)} ref="block7"></td>
-                    <td className="white" onClick={() => this.handleClick(8)} ref="block8"></td>
-                    <td className="white" onClick={() => this.handleClick(9)} ref="block9"></td>
+                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(7)} ref="block7"></td>
+                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(8)} ref="block8"></td>
+                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(9)} ref="block9"></td>
                   </tr>
                 </tbody>
               </table>
