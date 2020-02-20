@@ -1,187 +1,140 @@
 import React from 'react';
 import './App.css';
-import * as ReactDOM from 'react-dom';
-import playerA from  "./A.png";
-import playerB from  "./B.png";
-import { setTimeout } from 'timers';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      boardTitle : "CLICK START GAME",
-      isGameStart : false,
-      currentPlayer : "",
-      totalBlock : 0,
-      isWinner : false,
-      isFinish : false
+      isWinner: false,
+      userClick: 0,
+      computerClick: 0,
+      isPlayerTurn: true,
+      tieGames: 0,
+      computerWin: 0,
+      playerWin: 0,
+      isClickable: true
     };
   }
 
-  onBoardClick = () => {
-    if(this.state.isFinish || this.state.isWinner)
-    {
+  handleClick = (index) => {
+    if (!this.state.isClickable) {
       return;
     }
 
+    if (this.refs["block" + index].className.length > 0) {
+      return;
+    }
+
+    if (this.state.isWinner) {
+      return;
+    }
+
+    this.refs["block" + index].className = "x";
+    this.refs["block" + index].classList.add('x');
+    this.checkForWinner();
     this.setState({
-      isGameStart : true,
-      boardTitle : "Player A turn!",
-      currentPlayer : "A"
+      userClick: parseInt(this.state.userClick) + 1,
+      isClickable: false
+    }, () => {
+      this.computerTurn(index);
     });
   }
 
-  logicVerification = async () => {
-    let correct = false;
+  resetGame = () => {
+    for (let i = 1; i <= 9; i++) {
+      this.refs["block" + i].classList = "";
+    }
+
+    this.setState({
+      userClick: 0,
+      computerClick: 0,
+      isWinner: false,
+      isClickable: true
+    });
+  }
+
+  computerTurn = () => {
+    if (this.state.isWinner) {
+      return;
+    }
+
+    let notBlueOrRed = [];
+    let isAvailable = false;
+    for (let i = 1; i <= 9; i++) {
+      if (this.refs["block" + i].className.length === 0) {
+        notBlueOrRed.push(i);
+        isAvailable = true;
+      }
+    }
+
+    if (isAvailable) {
+      setTimeout(() => {
+        var randomItem = notBlueOrRed[Math.floor(Math.random() * notBlueOrRed.length)];
+        this.refs["block" + randomItem].className = "o";
+        this.refs["block" + randomItem].classList.add('o');
+        this.checkForWinner();
+        this.setState({
+          computerClick: parseInt(this.state.computerClick) + 1,
+          isClickable: true
+        });
+      }, 1000);
+    } else {
+      if (!this.state.isWinner) {
+        this.setState({
+          tieGames: parseInt(this.state.tieGames) + 1
+        }, () => {
+          setTimeout(() => {
+            this.resetGame();
+          }, 2000);
+        });
+      }
+    }
+  }
+
+  checkForWinner = () => {
     const combinationCollection = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]];
     combinationCollection.map((data) => {
-      if(this.refs["block" + data[0]].textContent && this.refs["block" + data[1]].textContent && this.refs["block" + data[2]].textContent)
-      {
-        if (this.refs["block" + data[0]].textContent.toLowerCase() === this.refs["block" + data[1]].textContent.toLowerCase() && this.refs["block" + data[1]].textContent.toLowerCase() === this.refs["block" + data[2]].textContent.toLowerCase() && this.refs["block" + data[2]].textContent.toLowerCase() === this.refs["block" + data[0]].textContent.toLowerCase()) {
-          correct = true;
-          this.refs["block" + data[0]].className = this.refs["block" + data[0]].className  + " correct";
-          this.refs["block" + data[1]].className = this.refs["block" + data[1]].className  + " correct";
-          this.refs["block" + data[2]].className = this.refs["block" + data[2]].className  + " correct";
-          let BoardTitle = "Player B Winner!";
-          if (this.refs["block" + data[0]].textContent.toLowerCase() === "x") {
-              BoardTitle  = "Player A Winner!";
-          }
-
+      if ((this.refs["block" + data[0]].className && this.refs["block" + data[1]].className && this.refs["block" + data[2]].className)
+        && (this.refs["block" + data[0]].className.toLowerCase() === this.refs["block" + data[1]].className.toLowerCase() && this.refs["block" + data[1]].className.toLowerCase() === this.refs["block" + data[2]].className.toLowerCase() && this.refs["block" + data[2]].className.toLowerCase() === this.refs["block" + data[0]].className.toLowerCase())) {
+        {
           this.setState({
-            boardTitle: BoardTitle,
-            currentPlayer: "",
             isWinner: true,
-            isFinish: true,
-            totalBlock : 0,
-            isGameStart : false
-          },() => {
+            isUserWinnder: (this.refs["block" + data[0]].className === "x"),
+            playerWin: (this.refs["block" + data[0]].className === "x") ? (parseInt(this.state.playerWin) + 1) : this.state.playerWin,
+            computerWin: (this.refs["block" + data[0]].className === "o") ? (parseInt(this.state.computerWin) + 1) : this.state.computerWin
+          }, () => {
+            this.refs["block" + data[0]].classList.add('blink');
+            this.refs["block" + data[1]].classList.add('blink');
+            this.refs["block" + data[2]].classList.add('blink');
             setTimeout(() => {
-              [...Array(9)].map((data,sindex) => {
-                this.refs["block" + (sindex + 1)].textContent = "";
-                this.refs["block" + (sindex + 1)].className = "white";
-              });
-              this.setState({
-                boardTitle: "RESTART GAME",
-                isGameStart : false,
-                isFinish : false,
-                isWinner: false
-              });
-            }, 5000);  
+              this.resetGame();
+            }, 2000);
           });
         }
       }
     });
-
-    if(this.state.totalBlock === 9 && !correct)
-    {
-        this.setState({
-        boardTitle: "NO WINNER",
-        currentPlayer: "",
-        totalBlock : 0,
-        isWinner : false,
-        isFinish : true
-      },() => {
-        setTimeout(() => {
-          [...Array(9)].map((data,sindex) => {
-            this.refs["block" + (sindex + 1)].textContent = "";
-          });
-          this.setState({
-            boardTitle: "RESTART GAME",
-            isGameStart : false,
-            isFinish : false,
-            isWinner: false
-          });
-        }, 5000);  
-      });
-    }
-  }
-
-  handleClick = async (index) => {
-    if(!this.state.isGameStart || this.state.isFinish)
-    {
-      return;
-    }
-
-    if(this.refs["block" + index].textContent.length > 0){
-      return;
-    }
-
-    let TotalBlock = this.state.totalBlock;
-    if(TotalBlock === 8)
-    {
-      this.refs["block" + index].textContent = "X";
-      this.setState({
-        currentPlayer: "",
-        totalBlock:  TotalBlock = TotalBlock + 1
-      }, async () => {
-        await this.logicVerification();
-      });
-    }else{
-      TotalBlock = TotalBlock + 1;
-      
-      if (this.state.currentPlayer === "A") {
-        this.refs["block" + index].textContent = "X";
-        this.setState({
-          boardTitle: "Player B turn!",
-          currentPlayer: "B",
-          totalBlock: TotalBlock
-        }, async () => {
-          await this.logicVerification();
-        });
-      } else {
-        this.refs["block" + index].textContent = "O";
-        this.setState({
-          boardTitle: "Player A turn!",
-          currentPlayer: "A",
-          totalBlock: TotalBlock
-        }, async () => {
-          await this.logicVerification();
-        });
-      }
-    }
   }
 
   render() {
     return (
       <div className="App">
-        <div class="container h-100">
-          <div class="row h-100">
-            <div className="col-md-12 d-flex justify-content-center align-items-center">
-              <table style={{ width : "450px", height : "350px" }}>
-                <tbody>
-                  <tr height="60px">
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td colspan="3" className="scoreboard text-center" onClick={(!this.state.isGameStart && this.onBoardClick)}>{this.state.boardTitle}</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                  </tr>
-                  <tr height="10px">
-                    <td colspan="7">&nbsp;</td>
-                  </tr>
-                  <tr className="white">
-                    <td rowspan="4" className={"playe_a"}><img className={this.state.currentPlayer === "A" && "active"} width="100%" src={playerA} alt="Player A" /></td>
-                    <td rowspan="4">&nbsp;</td>
-                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(1)} ref="block1"></td>
-                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(2)} ref="block2"></td>
-                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(3)} ref="block3"></td>
-                    <td rowspan="4">&nbsp;</td>
-                    <td rowspan="4" className={"playe_b"}><img className={this.state.currentPlayer === "B" && "active"} width="100%" src={playerB} alt="Player B" /></td>
-                  </tr>
-                  <tr>
-                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(4)} ref="block4"></td>
-                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(5)} ref="block5"></td>
-                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(6)} ref="block6"></td>
-                  </tr>
-                  <tr className="white">
-                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(7)} ref="block7"></td>
-                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(8)} ref="block8"></td>
-                    <td className={"white " + (this.state.isFinish && !this.state.isWinner ? "allwrong" : "")} onClick={() => this.handleClick(9)} ref="block9"></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+        <div className="game">
+          <div className="board">
+            <div onClick={() => this.handleClick(1)} className="square top left" ><div ref="block1"></div></div>
+            <div onClick={() => this.handleClick(2)} className="square top" ><div ref="block2"></div></div>
+            <div onClick={() => this.handleClick(3)} className="square top right" ><div ref="block3"></div></div>
+            <div onClick={() => this.handleClick(4)} className="square left" ><div ref="block4"></div></div>
+            <div onClick={() => this.handleClick(5)} className="square" ><div ref="block5"></div></div>
+            <div onClick={() => this.handleClick(6)} className="square right" ><div ref="block6"></div></div>
+            <div onClick={() => this.handleClick(7)} className="square bottom left" ><div ref="block7"></div></div>
+            <div onClick={() => this.handleClick(8)} className="square bottom" ><div ref="block8"></div></div>
+            <div onClick={() => this.handleClick(9)} className="square bottom right" ><div ref="block9"></div></div>
           </div>
+        </div>
+        <div class="scores p1">
+          <p class="player1"><span class="p1">Player</span><span class="p2">Player 1</span> (<span class="x"></span>)<span class="score">{this.state.playerWin}</span></p>
+          <p class="ties">Tie<span class="score">{this.state.tieGames}</span></p>
+          <p class="player2"><span class="p1">Computer</span><span class="p2">Player 2</span> (<span class="o"></span>)<span class="score">{this.state.computerWin}</span></p>
         </div>
       </div>
     );
